@@ -1,16 +1,16 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:appflowy_editor/appflowy_editor.dart';
+import '../class/note.dart'; // Import the Note class
 
 class FilesPage extends StatelessWidget {
-  final List<EditorState> notes;
-  final List<String> noteTitles; // Add this parameter
-  final Function(int) onNoteSelected;
-  final Function(int) onNoteDeleted;
+  final List<Note> notes;
+  final List<String> noteTitles; // Note titles might be redundant if you use Note objects
+  final Function(String) onNoteSelected;
+  final Function(String) onNoteDeleted;
 
   const FilesPage({
     super.key,
     required this.notes,
-    required this.noteTitles, // Initialize it
+    required this.noteTitles,
     required this.onNoteSelected,
     required this.onNoteDeleted,
   });
@@ -20,20 +20,21 @@ class FilesPage extends StatelessWidget {
     return ListView.builder(
       itemCount: notes.length,
       itemBuilder: (context, index) {
+        final note = notes[index];
         return ListTile(
           contentPadding: const EdgeInsets.all(8.0),
-          leading: Text(noteTitles[index], style: const TextStyle(fontSize: 16)), // Use the custom title
+          leading: Text(note.title, style: const TextStyle(fontSize: 16)),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Button(
                 child: const Text('Open'),
-                onPressed: () => onNoteSelected(index), // 點擊筆記重新打開
+                onPressed: () => onNoteSelected(note.id),
               ),
               const SizedBox(width: 8),
               Button(
                 child: const Text('Delete'),
-                onPressed: () => onNoteDeleted(index), // 刪除筆記
+                onPressed: () => onNoteDeleted(note.id),
               ),
             ],
           ),

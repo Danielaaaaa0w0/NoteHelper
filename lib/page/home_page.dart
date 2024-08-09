@@ -1,18 +1,17 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/gestures.dart';
+import '../class/note.dart'; // Import the Note class
 
 class HomePage extends StatefulWidget {
-  final List<EditorState> notes;
-  final List<int> openTabs;
-  final List<String> noteTitles; // Add this parameter
-  final Function(int) onNoteClose;
+  final List<Note> notes;
+  final List<String> openTabs;
+  final Function(String) onNoteClose;
 
   const HomePage({
-    super.key, 
+    super.key,
     required this.notes,
     required this.openTabs,
-    required this.noteTitles, // Initialize it
     required this.onNoteClose,
   });
 
@@ -22,25 +21,37 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  
+
   @override
   Widget build(BuildContext context) {
+    if (widget.notes.isEmpty) {
+      return const ScaffoldPage(
+        content: Center(
+          child: Text('Welcome! Click "Add Note" to create your first note.'),
+        ),
+      );
+    }
+
     return ScaffoldPage(
       content: TabView(
         currentIndex: selectedIndex,
         onChanged: (index) => setState(() => selectedIndex = index),
-        tabs: widget.openTabs.map((index) {
+        tabs: widget.notes.where((note) => widget.openTabs.contains(note.id)).map((note) {
+          // final index = widget.notes.indexOf(note);
           return Tab(
-            text: Text(widget.noteTitles[index]),
+            text: Text(note.title),
             body: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: AppFlowyEditor(editorState: widget.notes[index], editorStyle: customizeEditorStyle(),),
+              child: AppFlowyEditor(
+                editorState: note.editorState,
+                editorStyle: customizeEditorStyle(),
+              ),
             ),
             closeIcon: const Icon(FluentIcons.chrome_close),
             onClosed: () {
-              widget.onNoteClose(index); // Close the tab when requested
+              widget.onNoteClose(note.id);
               setState(() {
-                widget.openTabs.remove(index);
+                widget.openTabs.remove(note.id);
                 if (selectedIndex > 0 && selectedIndex >= widget.openTabs.length) {
                   selectedIndex = widget.openTabs.length - 1;
                 }

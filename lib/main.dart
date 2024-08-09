@@ -4,6 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'page/home_page.dart';
 import 'page/files_page.dart';
 import 'page/settings_page.dart';
+import 'class/note.dart'; // Import the Note class
 import 'package:appflowy_editor/appflowy_editor.dart';
 
 
@@ -19,8 +20,8 @@ class MyApp extends StatelessWidget {
     return FluentApp(
       title: 'NoteHelper',
       theme: FluentThemeData(
-        brightness: Brightness.dark, // 設置為暗黑模式
-        accentColor: Colors.yellow, // 設置主題色為黃色
+        brightness: Brightness.dark, // Set dark mode
+        accentColor: Colors.yellow, // Set accent color to yellow
       ),
       home: const MainPage(),
     );
@@ -36,17 +37,20 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentPage = 0;
-  List<EditorState> notes = [EditorState.blank(withInitialText: true)];
-  List<int> openTabs = [0]; // Track open tabs by their indices
-  List<String> noteTitles = ['Untitled Note']; // Default title for the first note
+  List<Note> notes = []; // Use Note objects for notes
+  List<String> openTabs = []; // Track open tabs by note IDs
 
   void _addNote() async {
     String? noteTitle = await _showAddNoteDialog();
     if (noteTitle != null && noteTitle.isNotEmpty) {
+      final newNote = Note(
+        id: DateTime.now().toString(), // Unique ID for the note
+        title: noteTitle,
+        editorState: EditorState.blank(withInitialText: true),
+      );
       setState(() {
-        notes.add(EditorState.blank(withInitialText: true));
-        noteTitles.add(noteTitle); // Store the custom title
-        openTabs.add(notes.length - 1); // Add the new note to open tabs
+        notes.add(newNote);
+        openTabs.add(newNote.id);
         _currentPage = 0;
       });
     }
@@ -59,13 +63,13 @@ class _MainPageState extends State<MainPage> {
         String noteTitle = '';
         return Center(
           child: Container(
-            height: 200, // 設定對話框的長度
+            height: 200, // Set dialog height
             child: ContentDialog(
               title: const Text('Enter Note Title'),
               content: TextBox(
                 onChanged: (value) => noteTitle = value,
                 placeholder: 'Note Title',
-                maxLines: 1,  // 確保文字框只有一行
+                maxLines: 1, // Single line text box
                 maxLength: 20,
               ),
               actions: [
@@ -84,25 +88,22 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
           ),
-        );  
+        );
       },
-      
     );
   }
 
-
-  void _removeNoteFromList(int index) {
+  void _removeNoteFromList(String id) {
     setState(() {
-      notes.removeAt(index);
-      noteTitles.removeAt(index); // Remove the title as well
-      openTabs.remove(index);
+      notes.removeWhere((note) => note.id == id);
+      openTabs.remove(id);
     });
   }
 
-  void _selectNoteInFiles(int index) {
-    if (!openTabs.contains(index)) {
+  void _selectNoteInFiles(String id) {
+    if (!openTabs.contains(id)) {
       setState(() {
-        openTabs.add(index);
+        openTabs.add(id);
       });
     }
     setState(() {
@@ -110,9 +111,9 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  void _closeTab(int index) {
+  void _closeTab(String id) {
     setState(() {
-      openTabs.remove(index);
+      openTabs.remove(id);
     });
   }
 
@@ -138,7 +139,6 @@ class _MainPageState extends State<MainPage> {
           body: HomePage(
             notes: notes,
             openTabs: openTabs,
-            noteTitles: noteTitles, // Pass titles to HomePage
             onNoteClose: _closeTab,
           ),
         ),
@@ -147,7 +147,7 @@ class _MainPageState extends State<MainPage> {
           title: const Text('Files'),
           body: FilesPage(
             notes: notes,
-            noteTitles: noteTitles, // Pass titles to FilesPage
+            noteTitles: notes.map((note) => note.title).toList(), // Map note titles
             onNoteSelected: _selectNoteInFiles,
             onNoteDeleted: _removeNoteFromList,
           ),
