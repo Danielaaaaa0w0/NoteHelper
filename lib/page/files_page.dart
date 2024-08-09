@@ -3,12 +3,14 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 
 class FilesPage extends StatelessWidget {
   final List<EditorState> notes;
+  final List<String> noteTitles; // Add this parameter
   final Function(int) onNoteSelected;
   final Function(int) onNoteDeleted;
 
   const FilesPage({
     super.key,
     required this.notes,
+    required this.noteTitles, // Initialize it
     required this.onNoteSelected,
     required this.onNoteDeleted,
   });
@@ -20,7 +22,7 @@ class FilesPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return ListTile(
           contentPadding: const EdgeInsets.all(8.0),
-          leading: Text('Note ${index + 1}', style: const TextStyle(fontSize: 16)),
+          leading: Text(noteTitles[index], style: const TextStyle(fontSize: 16)), // Use the custom title
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

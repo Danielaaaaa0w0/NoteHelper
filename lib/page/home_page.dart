@@ -5,12 +5,14 @@ import 'package:flutter/gestures.dart';
 class HomePage extends StatefulWidget {
   final List<EditorState> notes;
   final List<int> openTabs;
+  final List<String> noteTitles; // Add this parameter
   final Function(int) onNoteClose;
 
   const HomePage({
     super.key, 
     required this.notes,
     required this.openTabs,
+    required this.noteTitles, // Initialize it
     required this.onNoteClose,
   });
 
@@ -29,7 +31,7 @@ class _HomePageState extends State<HomePage> {
         onChanged: (index) => setState(() => selectedIndex = index),
         tabs: widget.openTabs.map((index) {
           return Tab(
-            text: Text('Note ${index + 1}'),
+            text: Text(widget.noteTitles[index]),
             body: Padding(
               padding: const EdgeInsets.all(8.0),
               child: AppFlowyEditor(editorState: widget.notes[index], editorStyle: customizeEditorStyle(),),
