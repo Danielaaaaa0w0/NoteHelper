@@ -15,8 +15,8 @@ A student's flutter practice project (based on appflowy) for managing notes
 * **Speech-to-text:** Support speech-to-text input.
 * **keyword-tagging:** Automatically tag your notes with keywords.
 * **Text Summarization:** Organize your articles.
-* **Knowledge Graph*:** Generate knowledge graph based on the contents.
-and so on...
+* **Knowledge Graph:** Generate knowledge graph based on the contents.
+* and so on...
 
 
 
