@@ -6,10 +6,18 @@ import 'page/files_page.dart';
 import 'page/settings_page.dart';
 import 'class/note.dart'; // Import the Note class
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'theme.dart';
+import 'theme_notifier.dart';
+import 'package:provider/provider.dart';
 
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeNotifier(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,13 +25,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FluentApp(
-      title: 'NoteHelper',
-      theme: FluentThemeData(
-        brightness: Brightness.dark, // Set dark mode
-        accentColor: Colors.yellow, // Set accent color to yellow
-      ),
-      home: const MainPage(),
+    return Consumer<ThemeNotifier>(
+      builder: (context, themeNotifier, child) {
+        return FluentApp(
+          title: 'NoteHelper',
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: themeNotifier.themeMode,
+          home: const MainPage(),
+        );
+      },
     );
   }
 }
@@ -165,6 +176,18 @@ class _MainPageState extends State<MainPage> {
           title: const Text('Add Note'),
           body: Container(),
           onTap: _addNote,
+        ),
+        PaneItem(
+          icon: const Icon(FluentIcons.brightness),
+          onTap: () {
+            ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+            if (themeNotifier.themeMode == ThemeMode.light) {
+              themeNotifier.setTheme(ThemeMode.dark);
+            } else {
+              themeNotifier.setTheme(ThemeMode.light);
+            }
+          },
+          body: Container(),
         ),
       ],
       selected: _currentPage,

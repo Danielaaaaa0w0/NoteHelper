@@ -2,6 +2,8 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/gestures.dart';
 import '../class/note.dart'; // Import the Note class
+import '../theme_notifier.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final List<Note> notes;
@@ -19,6 +21,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+// 利用 HomePage 顯示多個 AppFlowyEditor，_HomePageState 會根據 notes 和 openTabs 來建立 TabView
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
@@ -44,7 +47,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(8.0),
               child: AppFlowyEditor(
                 editorState: note.editorState,
-                editorStyle: customizeEditorStyle(),
+                editorStyle: isDarkTheme(context) ? customizeEditorStyle() : const EditorStyle.desktop(),
               ),
             ),
             closeIcon: const Icon(FluentIcons.chrome_close),
@@ -66,6 +69,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+// 自訂 AppFlowyEditor 的樣式
 EditorStyle customizeEditorStyle() {
   return EditorStyle(
     padding: PlatformExtension.isDesktopOrWeb
@@ -114,4 +118,9 @@ EditorStyle customizeEditorStyle() {
       return textSpan as InlineSpan;
     },
   );
+}
+
+bool isDarkTheme(BuildContext context) {
+  ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+  return themeNotifier.themeMode == ThemeMode.dark;
 }
