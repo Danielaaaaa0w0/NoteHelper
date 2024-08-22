@@ -1,5 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import '../class/note.dart'; // Import the Note class
+import '../note.dart'; // Import the Note class
 
 class FilesPage extends StatelessWidget {
   final List<Note> notes;

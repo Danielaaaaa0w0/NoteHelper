@@ -1,10 +1,8 @@
-// ignore_for_file: sized_box_for_whitespace
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'page/home_page.dart';
 import 'page/files_page.dart';
 import 'page/settings_page.dart';
-import 'class/note.dart'; // Import the Note class
+import 'note.dart'; // Import the Note class
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'theme.dart';
 import 'theme_notifier.dart';
@@ -73,6 +71,7 @@ class _MainPageState extends State<MainPage> {
       builder: (BuildContext context) {
         String noteTitle = '';
         return Center(
+          // ignore: sized_box_for_whitespace
           child: Container(
             height: 200, // Set dialog height
             child: ContentDialog(
